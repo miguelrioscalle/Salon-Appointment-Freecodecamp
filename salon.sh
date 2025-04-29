@@ -1,39 +1,30 @@
 #! /bin/bash
 
 PSQL="psql -X --username=freecodecamp --dbname=salon --tuples-only -c"
-
-echo -e "\n~~~~~ MY SALON ~~~~~\n"
-
-echo "Welcome to My Salon, how can I help you?"
-
+echo "Salon service, what can i do for you?"
 MAIN_MENU() {
   if [[ $1 ]]
   then
     echo -e "\n$1"
   fi
-
   SERVICES=$($PSQL "SELECT * FROM services ORDER BY service_id")
   if [[ -z $SERVICES ]]
     then
-    echo "Sorry, we don't have this service available right now"
+    echo "That is not a service."
     else
-    echo -e "These are our services:"
     echo "$SERVICES" | while read SERVICE_ID BAR SERVICE_NAME
     do
       echo "$SERVICE_ID) $SERVICE_NAME"
     done
-    
-    echo -e "\n Please pick one of the services above by it's number:"
     read SERVICE_ID_SELECTED
-
       if [[ ! $SERVICE_ID_SELECTED =~ ^[0-9]+$ ]]
       then
-        MAIN_MENU "That is not a number."
+        MAIN_MENU "That input is not a number."
       else
         SERVICE_TO_SCHEDULE=$($PSQL "SELECT service_id FROM services WHERE service_id = $SERVICE_ID_SELECTED")
         if [[ -z $SERVICE_TO_SCHEDULE ]]
         then
-          MAIN_MENU "I did not find that service. Please, try again."
+          MAIN_MENU "That is not an available service."
         else
         echo -e "\n What is your phone number?"
         read CUSTOMER_PHONE
